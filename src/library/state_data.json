@@ -1,0 +1,210 @@
+[
+    {
+        "name": "Alabama",
+        "GISJOIN": "G010"
+    },
+    {
+        "name": "Delaware",
+        "GISJOIN": "G100"
+    },
+    {
+        "name": "Colorado",
+        "GISJOIN": "G080"
+    },
+    {
+        "name": "Arizona",
+        "GISJOIN": "G040"
+    },
+    {
+        "name": "Arkansas",
+        "GISJOIN": "G050"
+    },
+    {
+        "name": "District of Columbia",
+        "GISJOIN": "G110"
+    },
+    {
+        "name": "Indiana",
+        "GISJOIN": "G180"
+    },
+    {
+        "name": "California",
+        "GISJOIN": "G060"
+    },
+    {
+        "name": "Illinois",
+        "GISJOIN": "G170"
+    },
+    {
+        "name": "Minnesota",
+        "GISJOIN": "G270"
+    },
+    {
+        "name": "Kansas",
+        "GISJOIN": "G200"
+    },
+    {
+        "name": "Mississippi",
+        "GISJOIN": "G280"
+    },
+    {
+        "name": "Missouri",
+        "GISJOIN": "G290"
+    },
+    {
+        "name": "Rhode Island",
+        "GISJOIN": "G440"
+    },
+    {
+        "name": "Connecticut",
+        "GISJOIN": "G090"
+    },
+    {
+        "name": "New Hampshire",
+        "GISJOIN": "G330"
+    },
+    {
+        "name": "North Dakota",
+        "GISJOIN": "G380"
+    },
+    {
+        "name": "New Jersey",
+        "GISJOIN": "G340"
+    },
+    {
+        "name": "Tennessee",
+        "GISJOIN": "G470"
+    },
+    {
+        "name": "South Dakota",
+        "GISJOIN": "G460"
+    },
+    {
+        "name": "Nevada",
+        "GISJOIN": "G320"
+    },
+    {
+        "name": "Idaho",
+        "GISJOIN": "G160"
+    },
+    {
+        "name": "Massachusetts",
+        "GISJOIN": "G250"
+    },
+    {
+        "name": "Pennsylvania",
+        "GISJOIN": "G420"
+    },
+    {
+        "name": "Iowa",
+        "GISJOIN": "G190"
+    },
+    {
+        "name": "Georgia",
+        "GISJOIN": "G130"
+    },
+    {
+        "name": "Kentucky",
+        "GISJOIN": "G210"
+    },
+    {
+        "name": "Hawaii",
+        "GISJOIN": "G150"
+    },
+    {
+        "name": "Nebraska",
+        "GISJOIN": "G310"
+    },
+    {
+        "name": "Oklahoma",
+        "GISJOIN": "G400"
+    },
+    {
+        "name": "Ohio",
+        "GISJOIN": "G390"
+    },
+    {
+        "name": "Montana",
+        "GISJOIN": "G300"
+    },
+    {
+        "name": "Oregon",
+        "GISJOIN": "G410"
+    },
+    {
+        "name": "New Mexico",
+        "GISJOIN": "G350"
+    },
+    {
+        "name": "New York",
+        "GISJOIN": "G360"
+    },
+    {
+        "name": "Utah",
+        "GISJOIN": "G490"
+    },
+    {
+        "name": "Vermont",
+        "GISJOIN": "G500"
+    },
+    {
+        "name": "Michigan",
+        "GISJOIN": "G260"
+    },
+    {
+        "name": "Puerto Rico",
+        "GISJOIN": "G720"
+    },
+    {
+        "name": "West Virginia",
+        "GISJOIN": "G540"
+    },
+    {
+        "name": "Wyoming",
+        "GISJOIN": "G560"
+    },
+    {
+        "name": "Wisconsin",
+        "GISJOIN": "G550"
+    },
+    {
+        "name": "Maine",
+        "GISJOIN": "G230"
+    },
+    {
+        "name": "Washington",
+        "GISJOIN": "G530"
+    },
+    {
+        "name": "Maryland",
+        "GISJOIN": "G240"
+    },
+    {
+        "name": "North Carolina",
+        "GISJOIN": "G370"
+    },
+    {
+        "name": "South Carolina",
+        "GISJOIN": "G450"
+    },
+    {
+        "name": "Louisiana",
+        "GISJOIN": "G220"
+    },
+    {
+        "name": "Virginia",
+        "GISJOIN": "G510"
+    },
+    {
+        "name": "Texas",
+        "GISJOIN": "G480"
+    },
+    {
+        "name": "Florida",
+        "GISJOIN": "G120"
+    },
+    {
+        "name": "Alaska",
+        "GISJOIN": "G020"
+    }
+]

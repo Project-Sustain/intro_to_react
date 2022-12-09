@@ -4,6 +4,7 @@
 
 # Task
 - The goal is to get familiar with JavaScript, React, and Material-UI
+- Step 0: Get your dev environment running. Make sure that when you run `npm start` you see the landing page with text.
 - Step 1: Create a list of all states, and display it on the page. Source file: `src/library/state_data.json`
 - Step 2: When a state from the list is clicked, display a list of all counties in *that* state. County source file `src/library/county_data.json`
     - Notice that there is a field called `GISJOIN` associated with each entry in both of these files. You'll want to read the contents of these files into a data structure which you can search. The first 4 characters is a county's `GISJOIN` match it's associated state's `GISJOIN`. For example, Calhoun county's `GISJOIN` is "G0100150". We know this is in Alabama because Alabama's `GISJOIN` is "G010".

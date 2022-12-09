@@ -4,7 +4,7 @@
 
 # Task
 - The goal is to get familiar with JavaScript, React, and Material-UI
-- You will be working in the `src/` directory. Ignore `public/`, `.gitignore`, `package.json`, and `package-lock.json`.
+- You will be working in the `src/` directory. Ignore `public/`, `node_modules/`, `.gitignore`, `package.json`, and `package-lock.json`.
 - Step 0: Get your dev environment running. Make sure that when you run `npm start` you see the landing page with text.
 - Step 1: Create a list of all states, and display it on the page. Source file: `src/library/state_data.json`
 - Step 2: When a state from the list is clicked, display a list of all counties in *that* state. County source file `src/library/county_data.json`

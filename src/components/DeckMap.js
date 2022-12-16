@@ -32,18 +32,23 @@ END OF TERMS AND CONDITIONS
 */
 
 
-import Main from "./components/Main";
+import DeckGL from '@deck.gl/react';
+import { StaticMap } from 'react-map-gl';
+import { BASEMAP } from '@deck.gl/carto';
 
 
-export default function App() {
-
-    const message = 'Blank Starting Page';
+export default function DeckMap({Map}) {
 
     return (
-        <div>
-            <Main
-                title={message}
-            />
-        </div>
+        <>
+            <DeckGL
+                viewState={Map.state.mapViewState}
+                onViewStateChange={e => Map.functions.setMapViewState(e.viewState)}
+                controller={true}
+                layers={[]}
+              >
+                <StaticMap mapStyle={BASEMAP.POSITRON} />
+            </DeckGL>
+        </>
     );
 }

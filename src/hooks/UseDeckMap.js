@@ -32,18 +32,43 @@ END OF TERMS AND CONDITIONS
 */
 
 
-import Main from "./components/Main";
+import { useState } from 'react';
+
+export const UseDeckMap = () => {
+
+    const [mapViewState, setMapViewState] = useState({
+        longitude: -98.5795,
+        latitude: 39.8283,
+        zoom: 4.3,
+        pitch: 30,
+        bearing: 0
+    });
 
 
-export default function App() {
+    // Functions
+    const updateMapViewState = (coordinates) => {
+        const newViewState = {
+            longitude: coordinates[0],
+            latitude: coordinates[1] - 0.0008,
+            zoom: 17,
+            pitch: 30,
+            bearing: 0
+        }
+        setMapViewState(newViewState);
+        //FIXME Fly map
+    }
 
-    const message = 'Blank Starting Page';
 
-    return (
-        <div>
-            <Main
-                title={message}
-            />
-        </div>
-    );
+    // Return Vals
+    const state = { mapViewState };
+
+    const functions = {
+        setMapViewState: (viewState) => setMapViewState(viewState),
+        updateMapViewState: (coordinates) => updateMapViewState(coordinates)
+    };
+
+
+    // Return
+    return { state, functions };
+
 }

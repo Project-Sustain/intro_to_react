@@ -76,6 +76,10 @@ export default function Main({ title }) {
      *      with a state/county. Included in that information is the coordinates. Currently
      *      state/county are hard-coded to 'Larimer', and 'Colorado'. 
      * 
+     * This function logs to the console the return from the API. Open the inspection pane in your
+     *      browser to see what is printed in the console. You can usually do this by right clicking
+     *      on the page and selection 'inspect', then going to the console tab.
+     * 
      * We'll talk about what this function is doing during the meeting.
      */
     const sendCoordinatesRequest = async() => {

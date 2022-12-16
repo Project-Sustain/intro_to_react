@@ -32,18 +32,29 @@ END OF TERMS AND CONDITIONS
 */
 
 
-import Main from "./components/Main";
+export const UseApi = () => {
 
 
-export default function App() {
+    const sendRequest = async(state, county) => {
+        
+        const API_KEY = 'bcab9f4b97ee4fec8bade876b485bd5c';
+        const endpoint = `https://api.opencagedata.com/geocode/v1/json?q=${county} County, ${state}, United States&key=${API_KEY}`;
+        
+        const promise = await fetch(endpoint);
 
-    const message = 'Blank Starting Page';
+        if(promise) {
+            return promise.json();
+        }
 
-    return (
-        <div>
-            <Main
-                title={message}
-            />
-        </div>
-    );
+        else return null;
+
+    };
+
+    const functions = {
+        sendRequest: (state, county) => sendRequest(state, county)
+    };
+
+    return { functions };
+
 }
+

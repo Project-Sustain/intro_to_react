@@ -32,82 +32,30 @@ END OF TERMS AND CONDITIONS
 */
 
 
-import { useState, useEffect } from "react";
-import { Stack, Paper, Typography } from "@mui/material";
-import { makeStyles } from "@material-ui/core";
-import { UseDeckMap } from "../hooks/UseDeckMap";
-import { UseApi } from "../hooks/UseApi";
-import DeckMap from "./DeckMap";
-import { Button } from "@mui/material";
-import ExampleLineChart from "./ExampleLineChart";
+import { ResponsiveContainer, PieChart, Pie } from 'recharts';
 
 
-const useStyles = makeStyles({
-    root: {
-        width: '25vw',
-        margin: '10px',
-        padding: '10px',
-        zIndex: 5000,
-        opacity: 0.8
-    }
-});
+const data = [
+    { name: 'Group A', value: 400 },
+    { name: 'Group B', value: 300 },
+    { name: 'Group C', value: 300 },
+    { name: 'Group D', value: 200 },
+  ];
 
-
-export default function Main({ title }) {
-
-    const classes = useStyles();
-
-    const Map = UseDeckMap();
-    const Api = UseApi();
-
-    const [selectedState, setSelectedState] = useState('');
-    const [countyList, setCountyList] = useState([]);
-
-
-    useEffect(() => {
-        /**
-         * Get the list of associated counties
-         * Call to setCountyList() with the list of associated counties
-         */
-    }, [selectedState]);
-
-
-    /**
-     * This is the function that connects to the online API and retrieves information associated
-     *      with a state/county. Included in that information is the coordinates. Currently
-     *      state/county are hard-coded to 'Larimer', and 'Colorado'. 
-     * 
-     * This function logs to the console the return from the API. Open the inspection pane in your
-     *      browser to see what is printed in the console. You can usually do this by right clicking
-     *      on the page and selection 'inspect', then going to the console tab.
-     * 
-     * We'll talk about what this function is doing during the meeting.
-     */
-    const sendCoordinatesRequest = async() => {
-        const response = await Api.functions.sendRequest('Larimer', 'Colorado');
-        if (response) {
-            console.log({response});
-        }
-        else console.log('Error sending API request');
-    }
+export default function ExampleLineChart() {
 
     return (
-        <>
-            <DeckMap Map={Map} />
-            <Stack direction='column' alignItems='center'>
-                <Paper className={classes.root} elevation={3}>
-                    <Stack direction='column' alignItems='center' spacing={2}>
-                        <Typography align='center'>Title: {title}</Typography>
-                        <Button onClick={sendCoordinatesRequest} variant='outlined'>Send Request</Button>
-                    </Stack>
-                </Paper>
-                {/* Uncomment below to see a chart example */}
-                {/* <Paper className={classes.root} elevation={3}>
-                    <ExampleLineChart/>
-                </Paper> */}
-            </Stack>
-        </>
+        <ResponsiveContainer width='100%' height={350}>
+            <PieChart>
+                <Pie
+                    data={data}
+                    dataKey="value"
+                    nameKey="name"
+                    cx="50%"
+                    cy="50%"
+                    outerRadius={150}
+                />
+            </PieChart>
+        </ResponsiveContainer>
     );
-
 }
-

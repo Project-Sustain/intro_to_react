@@ -13,6 +13,15 @@
 - Step 3: Allow the user to search for counties by name. This involves a TextField that the user can type into, which filters the displayed counties.
     - This list is conditionally rendered. When no state is selected or when the selected state in cleared, this list does not show up.
 - Step 4: When a county is clicked, the map zooms to that county.
+    - Use the sendRequest() function
+- Step 5: Make 3 charts
+    - Pie chart for counties that begin with vowels vs consonants
+    - Line chart of number of letters per county
+        - x-axis: county names
+        - y-axis: number of letters
+    - Histograph (bar chart) of number of counties with which number of letters
+        - x-axis: numbers of letters in county names
+        - y-axis: number of counties with the corresponing number of letters
 - Ask Matt any clarifying questions! Reach out on MS Teams, or email `asterix@rams.colostate.edu`
 - NOTE: Use good software engineering practices (SRP, generalized components, clean code)
 
@@ -25,3 +34,5 @@
 - Some useful JavaScript functions to know about
     - .map() `https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/map`
     - .filter() `https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/filter`
+- ReCharts Charting: `https://recharts.org/en-US/`
+- Deck GL Map: `https://deck.gl/`

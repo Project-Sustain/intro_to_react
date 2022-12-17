@@ -100,15 +100,6 @@ export default function Main({ title }) {
                         <Button onClick={sendCoordinatesRequest} variant='outlined'>Send Request</Button>
                     </Stack>
                 </Paper>
-                {/* 
-                
-                Component to render the list of states
-
-                Component to render list of counties based on selected state
-
-                Notes: use .map() when rendering items from a list, use .filter() to get a sub-array from an array
-                
-                */}
             </Stack>
         </>
     );

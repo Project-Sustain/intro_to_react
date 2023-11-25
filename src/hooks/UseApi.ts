@@ -32,82 +32,29 @@ END OF TERMS AND CONDITIONS
 */
 
 
-import { useState, useEffect } from "react";
-import { Stack, Paper, Typography } from "@mui/material";
-import { makeStyles } from "@material-ui/core";
-import { UseDeckMap } from "../hooks/UseDeckMap";
-import { UseApi } from "../hooks/UseApi";
-import DeckMap from "./DeckMap";
-import { Button } from "@mui/material";
-import ExampleLineChart from "./ExampleLineChart";
+export const UseApi = () => {
 
 
-const useStyles = makeStyles({
-    root: {
-        width: '25vw',
-        margin: '10px',
-        padding: '10px',
-        zIndex: 5000,
-        opacity: 0.8
-    }
-});
+    const sendRequest = async(state: string, county: string) => {
+        
+        const API_KEY = 'bcab9f4b97ee4fec8bade876b485bd5c';
+        const endpoint = `https://api.opencagedata.com/geocode/v1/json?q=${county} County, ${state}, United States&key=${API_KEY}`;
+        
+        const promise = await fetch(endpoint);
 
-
-export default function Main({ title }) {
-
-    const classes = useStyles();
-
-    const Map = UseDeckMap();
-    const Api = UseApi();
-
-    const [selectedState, setSelectedState] = useState('');
-    const [countyList, setCountyList] = useState([]);
-
-
-    useEffect(() => {
-        /**
-         * Get the list of associated counties
-         * Call to setCountyList() with the list of associated counties
-         */
-    }, [selectedState]);
-
-
-    /**
-     * This is the function that connects to the online API and retrieves information associated
-     *      with a state/county. Included in that information is the coordinates. Currently
-     *      state/county are hard-coded to 'Larimer', and 'Colorado'. 
-     * 
-     * This function logs to the console the return from the API. Open the inspection pane in your
-     *      browser to see what is printed in the console. You can usually do this by right clicking
-     *      on the page and selection 'inspect', then going to the console tab.
-     * 
-     * We'll talk about what this function is doing during the meeting.
-     */
-    const sendCoordinatesRequest = async() => {
-        const response = await Api.functions.sendRequest('Larimer', 'Colorado');
-        if (response) {
-            console.log({response});
+        if(promise) {
+            return promise.json();
         }
-        else console.log('Error sending API request');
-    }
 
-    return (
-        <>
-            <DeckMap Map={Map} />
-            <Stack direction='column' alignItems='center'>
-                <Paper className={classes.root} elevation={3}>
-                    <Stack direction='column' alignItems='center' spacing={2}>
-                        <Typography align='center'>Title: {title}</Typography>
-                        <Button onClick={sendCoordinatesRequest} variant='outlined'>Send Request</Button>
-                    </Stack>
-                </Paper>
-                {/* Uncomment below to see a chart example */}
-                {/* <Paper className={classes.root} elevation={3}>
-                    <ExampleLineChart/>
-                </Paper> */}
-            </Stack>
-        </>
-    );
+        else return null;
+
+    };
+
+    const functions = {
+        sendRequest: (state: string, county: string) => sendRequest(state, county)
+    };
+
+    return { functions };
 
 }
 

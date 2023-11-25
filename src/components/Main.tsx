@@ -32,18 +32,79 @@ END OF TERMS AND CONDITIONS
 */
 
 
-import Main from "./components/Main";
+import { useState, useEffect } from "react";
+import { Stack, Paper, Typography, styled } from "@mui/material";
+import { UseDeckMap } from "../hooks/UseDeckMap";
+import { UseApi } from "../hooks/UseApi";
+import DeckMap from "./DeckMap";
+import { Button } from "@mui/material";
+import ExampleLineChart from "./ExampleLineChart";
+
+interface MainProps {
+    title: string
+}
+
+export default function Main({ title }: MainProps) {
+
+    const Map = UseDeckMap();
+    const Api = UseApi();
+
+    const [selectedState, setSelectedState] = useState('');
+    const [countyList, setCountyList] = useState([]);
 
 
-export default function App() {
+    useEffect(() => {
+        /**
+         * Get the list of associated counties
+         * Call to setCountyList() with the list of associated counties
+         */
+    }, [selectedState]);
 
-    const message = 'Blank Starting Page';
+
+    /**
+     * This is the function that connects to the online API and retrieves information associated
+     *      with a state/county. Included in that information is the coordinates. Currently
+     *      state/county are hard-coded to 'Larimer', and 'Colorado'. 
+     * 
+     * This function logs to the console the return from the API. Open the inspection pane in your
+     *      browser to see what is printed in the console. You can usually do this by right clicking
+     *      on the page and selection 'inspect', then going to the console tab.
+     * 
+     * We'll talk about what this function is doing during the meeting.
+     */
+    const sendCoordinatesRequest = async() => {
+        const response = await Api.functions.sendRequest('Larimer', 'Colorado');
+        if (response) {
+            console.log({response});
+        }
+        else console.log('Error sending API request');
+    }
 
     return (
-        <div>
-            <Main
-                title={message}
-            />
-        </div>
+        <>
+            <DeckMap Map={Map} />
+            <Stack direction='column' alignItems='center'>
+                <StyledPaper elevation={3}>
+                    <Stack direction='column' alignItems='center' spacing={2}>
+                        <Typography align='center'>Title: {title}</Typography>
+                        <Button onClick={sendCoordinatesRequest} variant='outlined'>Send Request</Button>
+                    </Stack>
+                </StyledPaper>
+                {/* Uncomment below to see a chart example */}
+                {/* <Paper className={classes.root} elevation={3}>
+                    <ExampleLineChart/>
+                </Paper> */}
+            </Stack>
+        </>
     );
+
 }
+
+const StyledPaper = styled(Paper)({
+    width: '25vw',
+    margin: '10px',
+    padding: '10px',
+    zIndex: 5000,
+    opacity: 0.8
+})
+

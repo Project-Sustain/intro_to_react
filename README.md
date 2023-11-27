@@ -1,4 +1,6 @@
 # Setting up
+We recommend you use **node version 20**. Use [nvm](https://github.com/nvm-sh/nvm#installing-and-updating) if you need to switch versions.
+
 - Use `npm install` to install dependencies
 - Use `npm run dev` to compile & run the application. It will run on localhost:5173
 

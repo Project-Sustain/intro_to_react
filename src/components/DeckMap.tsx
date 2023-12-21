@@ -32,43 +32,32 @@ END OF TERMS AND CONDITIONS
 */
 
 
-import { useState } from 'react';
+import DeckGL from '@deck.gl/react/typed';
+import ReactMapGL from 'react-map-gl';
+import { BASEMAP } from '@deck.gl/carto/typed';
+import { DeckMapHook, ViewState } from '../hooks/UseDeckMap';
+import MapLibreGL from 'maplibre-gl';
 
-export const UseDeckMap = () => {
+interface DeckMapProps {
+    Map: DeckMapHook
+}
 
-    const [mapViewState, setMapViewState] = useState({
-        longitude: -98.5795,
-        latitude: 39.8283,
-        zoom: 4.3,
-        pitch: 30,
-        bearing: 0
-    });
+export default function DeckMap({Map}: DeckMapProps) {
 
-
-    // Functions
-    const updateMapViewState = (coordinates) => {
-        const newViewState = {
-            longitude: coordinates[0],
-            latitude: coordinates[1] - 0.0008,
-            zoom: 17,
-            pitch: 30,
-            bearing: 0
-        }
-        setMapViewState(newViewState);
-        //FIXME Fly map
-    }
-
-
-    // Return Vals
-    const state = { mapViewState };
-
-    const functions = {
-        setMapViewState: (viewState) => setMapViewState(viewState),
-        updateMapViewState: (coordinates) => updateMapViewState(coordinates)
-    };
-
-
-    // Return
-    return { state, functions };
-
+    return (
+        <>
+            <DeckGL
+                viewState={Map.state.mapViewState}
+                onViewStateChange={({viewState}) => Map.functions.setMapViewState(viewState as ViewState)}
+                controller={true}
+                layers={[]}
+              >
+                <ReactMapGL 
+                    mapStyle={BASEMAP.POSITRON}
+                    //@ts-expect-error
+                    mapLib={MapLibreGL} 
+                />
+            </DeckGL>
+        </>
+    );
 }

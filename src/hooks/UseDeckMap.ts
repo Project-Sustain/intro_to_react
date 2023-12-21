@@ -32,23 +32,63 @@ END OF TERMS AND CONDITIONS
 */
 
 
-import DeckGL from '@deck.gl/react';
-import { StaticMap } from 'react-map-gl';
-import { BASEMAP } from '@deck.gl/carto';
+import { useState } from 'react';
+
+export interface DeckMapHook {
+    state: {
+        mapViewState: ViewState
+    }
+    functions: {
+        setMapViewState: (viewState: ViewState) => void
+        updateMapViewState: (coordinates: Coordinates) => void
+    }
+}
+
+export interface ViewState {
+    longitude: number,
+    latitude: number,
+    zoom: number,
+    pitch: number,
+    bearing: number
+}
+
+type Coordinates = [number, number]
+
+export const UseDeckMap = (): DeckMapHook => {
+
+    const [mapViewState, setMapViewState] = useState({
+        longitude: -98.5795,
+        latitude: 39.8283,
+        zoom: 4.3,
+        pitch: 30,
+        bearing: 0
+    });
 
 
-export default function DeckMap({Map}) {
+    // Functions
+    const updateMapViewState = (coordinates: Coordinates) => {
+        const newViewState = {
+            longitude: coordinates[0],
+            latitude: coordinates[1] - 0.0008,
+            zoom: 17,
+            pitch: 30,
+            bearing: 0
+        }
+        setMapViewState(newViewState);
+        //FIXME Fly map
+    }
 
-    return (
-        <>
-            <DeckGL
-                viewState={Map.state.mapViewState}
-                onViewStateChange={e => Map.functions.setMapViewState(e.viewState)}
-                controller={true}
-                layers={[]}
-              >
-                <StaticMap mapStyle={BASEMAP.POSITRON} />
-            </DeckGL>
-        </>
-    );
+
+    // Return Vals
+    const state = { mapViewState };
+
+    const functions = {
+        setMapViewState: (viewState: ViewState) => setMapViewState(viewState),
+        updateMapViewState: (coordinates: Coordinates) => updateMapViewState(coordinates)
+    };
+
+
+    // Return
+    return { state, functions };
+
 }

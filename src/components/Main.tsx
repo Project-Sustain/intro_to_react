@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Stack, Paper, Typography, styled, List } from "@mui/material";
+import { Stack, Typography, List } from "@mui/material";
 import { UseDeckMap } from "../hooks/UseDeckMap";
 import { UseApi } from "../hooks/UseApi";
 import DeckMap from "./DeckMap";
@@ -11,6 +11,7 @@ import BarCharts from "./BarChart";
 import LineCharts from "./LineChart";
 import ListItem from '@mui/material/ListItem';
 import ListItemText from '@mui/material/ListItemText';
+import { StyledPaper } from "../styled-components/StyledPaper";
 
 interface MainProps {
     title: string
@@ -161,12 +162,3 @@ export default function Main({ title }: MainProps) {
         </>
     );
 }
-
-const StyledPaper = styled(Paper)({
-    width: '25vw',
-    margin: '10px',
-    padding: '10px',
-    zIndex: 5000,
-    opacity: 0.8
-})
-

@@ -41,6 +41,8 @@ export interface DeckMapHook {
     functions: {
         setMapViewState: (viewState: ViewState) => void
         updateMapViewState: (coordinates: Coordinates) => void
+        updateMapViewStateHome: (coordinates: Coordinates) => void
+
     }
 }
 
@@ -49,10 +51,11 @@ export interface ViewState {
     latitude: number,
     zoom: number,
     pitch: number,
-    bearing: number
+    bearing: number,
+    transitionDuration: number
 }
 
-type Coordinates = [number, number]
+type Coordinates = [number, number] 
 
 export const UseDeckMap = (): DeckMapHook => {
 
@@ -61,21 +64,42 @@ export const UseDeckMap = (): DeckMapHook => {
         latitude: 39.8283,
         zoom: 4.3,
         pitch: 30,
-        bearing: 0
+        bearing: 0,
+        transitionDuration: 1000
     });
+
+    const updateMapViewStateHome = (coordinates: Coordinates) => { // This hook returns the map back to the zoomed out view
+        const homeViewState = {
+            longitude: coordinates[0],
+            latitude: coordinates[1],
+            zoom: 4.3,
+            pitch: 30,
+            bearing: 0,
+            transitionDuration: 1000, 
+        };
+
+        console.log(coordinates[0]);
+        console.log(coordinates[1]);
+
+        functions.setMapViewState(homeViewState);
+    }
 
 
     // Functions
-    const updateMapViewState = (coordinates: Coordinates) => {
+    const updateMapViewState = (coordinates: Coordinates) => { // This hook returns the county location on map
         const newViewState = {
             longitude: coordinates[0],
             latitude: coordinates[1] - 0.0008,
             zoom: 17,
             pitch: 30,
-            bearing: 0
-        }
-        setMapViewState(newViewState);
-        //FIXME Fly map
+            bearing: 0,
+            transitionDuration: 1000, 
+        };
+
+        console.log(coordinates[0]);
+        console.log(coordinates[1]);
+
+        functions.setMapViewState(newViewState);
     }
 
 
@@ -84,7 +108,9 @@ export const UseDeckMap = (): DeckMapHook => {
 
     const functions = {
         setMapViewState: (viewState: ViewState) => setMapViewState(viewState),
-        updateMapViewState: (coordinates: Coordinates) => updateMapViewState(coordinates)
+        updateMapViewState: (coordinates: Coordinates) => updateMapViewState(coordinates),
+        updateMapViewStateHome: (coordinates: Coordinates) => updateMapViewStateHome(coordinates)
+
     };
 
 

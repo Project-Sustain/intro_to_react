@@ -16,6 +16,9 @@ We recommend you use **node version 20**. Use [nvm](https://github.com/nvm-sh/nv
     - This list is conditionally rendered. When no state is selected or when the selected state in cleared, this list does not show up.
 - Step 4: When a county is clicked, the map zooms to that county.
     - Use the sendRequest() function
+
+
+
 - Step 5: Make 3 charts
     - Pie chart for counties that begin with vowels vs consonants
     - Line chart of number of letters per county
@@ -24,6 +27,8 @@ We recommend you use **node version 20**. Use [nvm](https://github.com/nvm-sh/nv
     - Histograph (bar chart) of number of counties with which number of letters
         - x-axis: numbers of letters in county names
         - y-axis: number of counties with the corresponing number of letters
+
+        
 - Ask Matt any clarifying questions! Reach out on MS Teams, or email `asterix@rams.colostate.edu`
 - NOTE: Use good software engineering practices (SRP, generalized components, clean code)
 
@@ -38,3 +43,5 @@ We recommend you use **node version 20**. Use [nvm](https://github.com/nvm-sh/nv
     - .filter() `https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/filter`
 - ReCharts Charting: `https://recharts.org/en-US/`
 - Deck GL Map: `https://deck.gl/`
+
+

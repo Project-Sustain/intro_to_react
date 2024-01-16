@@ -4,7 +4,7 @@ import Main from "./Main";
 
 export default function App() {
 
-    const message = 'Blank Starting Page';
+    const message = 'State List';
 
     return (
         <div>

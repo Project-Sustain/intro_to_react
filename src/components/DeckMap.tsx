@@ -43,21 +43,21 @@ interface DeckMapProps {
 }
 
 export default function DeckMap({Map}: DeckMapProps) {
-
-    return (
-        <>
-            <DeckGL
-                viewState={Map.state.mapViewState}
-                onViewStateChange={({viewState}) => Map.functions.setMapViewState(viewState as ViewState)}
-                controller={true}
-                layers={[]}
-              >
-                <ReactMapGL 
-                    mapStyle={BASEMAP.POSITRON}
-                    //@ts-expect-error
-                    mapLib={MapLibreGL} 
-                />
-            </DeckGL>
-        </>
-    );
+        
+return (
+    <>
+        <DeckGL
+            viewState={Map.state.mapViewState}
+            onViewStateChange={({ viewState }) => Map.functions.setMapViewState(viewState as ViewState)}
+            controller={true}
+            layers={[]}
+        >
+            <ReactMapGL 
+                mapStyle={BASEMAP.POSITRON}
+                //@ts-expect-error
+                mapLib={MapLibreGL} 
+            />
+        </DeckGL>
+    </>
+);
 }

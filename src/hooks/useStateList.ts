@@ -1,11 +1,12 @@
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import stateData from '../library/state_data.json';
 import countyData from '../library/county_data.json';
-import { Coordinates, County } from "../components/Main";
+import { Coordinates } from "../components/Main";
 import { DeckMapHook } from "./UseDeckMap";
+import { UseCountyListHook } from "./useCountyList";
 
 export interface UseStateListHookProps {
-    setCountyList: Dispatch<SetStateAction<County[]>>
+    countyList: UseCountyListHook
     Map: DeckMapHook
 }
 
@@ -19,7 +20,7 @@ export interface UseStateListHook {
 interface HookContext {
     selectedState: string
     setSelectedState: Dispatch<SetStateAction<string>>
-    setCountyList: Dispatch<SetStateAction<County[]>>
+    countyList: UseCountyListHook
     Map: DeckMapHook
 }
 
@@ -28,20 +29,20 @@ interface HookContext {
 // This is called the container in a container/presentation pattern.
 // StateList being the component, makes it the presenter.
 
-const useStateList = ({setCountyList, Map}: UseStateListHookProps): UseStateListHook => {
+const useStateList = ({countyList, Map}: UseStateListHookProps): UseStateListHook => {
 
     // Note: This section contains state.
 
     const [selectedState, setSelectedState] = useState(stateData[0].name); // Holds State
 
     useEffect(() => {
-        setSelectedState(stateData[0].name);
+        setSelectedState(stateData[0].name); // TODO Is this good?
     }, [selectedState]);
 
     const context = {
         selectedState,
         setSelectedState,
-        setCountyList,
+        countyList,
         Map
     }
 
@@ -58,11 +59,11 @@ export default useStateList
 // Note: Here we place the functions of the hook.
 
 const handleStateClick = (stateGISJOIN: string, context: HookContext) => {  // This uses the GISJOIN value in the JSON file to map the correct state and counties
-    const {setSelectedState, setCountyList} = context
+    const {setSelectedState, countyList} = context
     setSelectedState(stateGISJOIN);
     const stateGISJOINPrefix = stateGISJOIN.substring(0, 4);
     const filteredCounties = countyData.filter(county => county.GISJOIN.startsWith(stateGISJOINPrefix));
-    setCountyList(filteredCounties);
+    countyList.setCountyList(filteredCounties);
 };
 
 const sendCoordinatesRequestHome = async(context: HookContext) => {  
@@ -72,7 +73,7 @@ const sendCoordinatesRequestHome = async(context: HookContext) => {
 };
 
 const clearSelection = (context: HookContext) => {
-    const {setSelectedState, setCountyList} = context
+    const {setSelectedState, countyList} = context
     setSelectedState('');
-    setCountyList([]);
+    countyList.setCountyList([]);
 };

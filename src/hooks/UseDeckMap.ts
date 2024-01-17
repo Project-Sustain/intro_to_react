@@ -78,9 +78,6 @@ export const UseDeckMap = (): DeckMapHook => {
             transitionDuration: 1000, 
         };
 
-        console.log(coordinates[0]);
-        console.log(coordinates[1]);
-
         functions.setMapViewState(homeViewState);
     }
 
@@ -95,9 +92,6 @@ export const UseDeckMap = (): DeckMapHook => {
             bearing: 0,
             transitionDuration: 1000, 
         };
-
-        console.log(coordinates[0]);
-        console.log(coordinates[1]);
 
         functions.setMapViewState(newViewState);
     }

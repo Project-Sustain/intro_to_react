@@ -8,6 +8,7 @@ import stateData from '../library/state_data.json';
 import countyData from '../library/county_data.json';
 import TextField from '@mui/material/TextField';
 import BarCharts from "./BarChart";
+import PieCharts from "./PieChart";
 import LineCharts from "./LineChart";
 import ListItem from '@mui/material/ListItem';
 import ListItemText from '@mui/material/ListItemText';
@@ -24,6 +25,11 @@ interface BarChartData {
 interface County {
     name: string; 
     GISJOIN: string; 
+}
+
+interface PieChartData {
+    name: string;
+    value: number;
 }
 
 const processCountyData = (counties: County[]): BarChartData[] => { // Retrives information for bar chart data
@@ -108,12 +114,32 @@ export default function Main({ title }: MainProps) {
     const barChartData = processCountyData(countyList);
 
 
+    const processDataForPieChart = (counties: County[]): PieChartData[] => { 
+        let vowelCount = 0;
+        let consonantCount = 0;
+    
+        counties.forEach(({ name }) => {
+            if ('AEIOUaeiou'.includes(name[0])) {
+                vowelCount++;
+            } else {
+                consonantCount++;
+            }
+        });
+    
+        return [
+            { name: 'Vowels', value: vowelCount },
+            { name: 'Consonants', value: consonantCount }
+        ];
+    };
+
+    const pieChartData = processDataForPieChart(countyList);
+    
     
     return (
         <>
             <DeckMap Map={Map} />
             <Stack direction="row" spacing={2} alignItems="flex-start">
-            <StyledPaper elevation={3} sx={{ maxHeight: '80vh', overflow: 'auto', width: '25vw', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+            <StyledPaper elevation={3} sx={{ maxHeight: '92vh', overflow: 'auto', width: '25vw', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
                 <Typography align='center'>{title}</Typography>
                 <Button onClick={sendCoordinatesRequestHome} variant='outlined' sx={{ margin: '10px 0' }}>Home</Button>
                 <List sx={{ width: '100%' }}>
@@ -125,7 +151,7 @@ export default function Main({ title }: MainProps) {
                 </List>
             </StyledPaper>
                 {countyList.length > 0 && (
-                    <StyledPaper elevation={3} sx={{ maxHeight: '80vh', overflow: 'auto', width: '25vw' }}>
+                    <StyledPaper elevation={3} sx={{ maxHeight: '92vh', overflow: 'auto', width: '25vw' }}>
                         <Typography align='center'>Counties</Typography>
                         <Button onClick={clearSelection} variant='outlined' sx={{ margin: '10px' }}>
                             Exit
@@ -148,12 +174,13 @@ export default function Main({ title }: MainProps) {
                                 
                 )}
                 {countyList.length > 0 && (
-            <StyledPaper elevation={3} sx={{ maxHeight: '80vh', overflow: 'auto', width: '25vw' }}>
+            <StyledPaper elevation={3} sx={{ maxHeight: '100vh', overflow: 'auto', width: '25vw' }}>
             <LineCharts data={chartData} stateName={selectedState || 'State'} />
+            <PieCharts data={pieChartData} stateName={selectedState || 'State'}/>
             </StyledPaper>
                 )}
                 {countyList.length > 0 && (
-            <StyledPaper elevation={3} sx={{ maxHeight: '800vh', overflow: 'auto', width: '25vw' }}>
+            <StyledPaper elevation={3} sx={{ maxHeight: '100vh', overflow: 'auto', width: '25vw' }}>
                 <BarCharts data={barChartData} />
             </StyledPaper>
                 )}

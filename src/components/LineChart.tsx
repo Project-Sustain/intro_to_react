@@ -5,7 +5,6 @@ interface ChartData {
     value: number;
 }
 
-// Use this type for the data prop in your LineCharts component
 interface LineChartsProps {
     data: ChartData[];
     stateName: string;

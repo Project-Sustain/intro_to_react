@@ -259,12 +259,19 @@ export default function Main({ title }: MainProps) {
                 </StyledPaper>
             </Stack>
             
-            {/*<Stack>*/}
+            <Stack>
                 {/* Uncomment below to see a chart example */}
-                {/*<Paper className={classes.root} elevation={3}>
+                <StyledPaper
+                sx={{
+                    
+    position: 'absolute',
+    bottom: 5,
+    right: 5,
+                }}
+                elevation={3}>
                     <ExampleLineChart/>
-                </Paper> */}
-            {/*</Stack>*/}
+                </StyledPaper>
+            </Stack>
         </>
     );
 
@@ -274,7 +281,7 @@ const StyledPaper = styled(Paper)({
     width: '25vw',
     margin: '10px',
     padding: '5px',
-    zIndex: 5000,
-    opacity: 0.8,
+    zIndex: 5001,
+    //opacity: 0.8,
 })
 

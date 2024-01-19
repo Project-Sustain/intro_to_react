@@ -33,12 +33,19 @@ END OF TERMS AND CONDITIONS
 
 
 import { useState, useEffect } from "react";
-import { Stack, Paper, Typography, styled } from "@mui/material";
+import { Stack, Paper, Typography, styled} from "@mui/material";
 import { UseDeckMap } from "../hooks/UseDeckMap";
 import { UseApi } from "../hooks/UseApi";
 import DeckMap from "./DeckMap";
 import { Button } from "@mui/material";
 import ExampleLineChart from "./ExampleLineChart";
+import React, { ChangeEvent } from 'react';
+import stateData from "../library/state_data.json"; //I imported this - this imports the state_data.json into main in order to be accessed - would access it by saying stateData.map for example
+import countyData from "../library/county_data.json"; //import county_data.json
+//make a separate file that turns state_data.json into a list and then call that in main
+//make a separate file that turns county_data.json into a list and then call that in main
+//look up how to use a react map in order to make a list out of a json file
+//NOTE: using react, typescript, and MUI for this project - link to MUI can be found in the README
 
 interface MainProps {
     title: string
@@ -46,11 +53,21 @@ interface MainProps {
 
 export default function Main({ title }: MainProps) {
 
+
     const Map = UseDeckMap();
     const Api = UseApi();
 
     const [selectedState, setSelectedState] = useState('');
-    const [countyList, setCountyList] = useState([]);
+    const [countyList, setCountyList] = useState<string[]>([]);
+    const [selectedCounty, setSelectedCounty] = useState('');
+    const [showCounties, setShowCounties] = useState(false); 
+    const [inputValue, setInputValue] = useState('---');
+    const [selectedRegion, setSelectedRegion] = useState('');
+    const [showCountyButton, setShowCountyButton] = useState(false);
+
+    const countyFullList = countyData.map((x) => [x.name, x.GISJOIN]); //list containing an array of county names and county GISJOIN numbers
+    const stateNameList = stateData.map((x) => x.name); //list containing just the state names
+    const stateGISList = stateData.map((x) => x.GISJOIN); //list containing just the state GISJOIN
 
 
     useEffect(() => {
@@ -58,6 +75,12 @@ export default function Main({ title }: MainProps) {
          * Get the list of associated counties
          * Call to setCountyList() with the list of associated counties
          */
+        let index: number = stateNameList.indexOf(selectedState); 
+        let stateKey: string = stateGISList[index]; 
+        const associatedCounties = countyFullList.filter(([_, word]) => word.substring(0, 4) === stateKey);
+        const associatedCountyNames = associatedCounties.map(([name, _]) => name); //list containing only the names of the associated counties
+        setCountyList(associatedCountyNames);
+
     }, [selectedState]);
 
 
@@ -73,28 +96,175 @@ export default function Main({ title }: MainProps) {
      * We'll talk about what this function is doing during the meeting.
      */
     const sendCoordinatesRequest = async() => {
-        const response = await Api.functions.sendRequest('Larimer', 'Colorado');
-        if (response) {
-            console.log({response});
+        const response = await Api.functions.sendRequest(selectedState, selectedCounty);
+        let valid = true;
+        // if(selectedState == ''){ //this causes me to have to click twice on each county for it to zoom into the map, rerendering is one step late?
+        //     valid = false; 
+        // }
+        if (response && valid) {
+            console.log(selectedCounty);
+            console.log(response); //when I first click on a county, it doesn't take me to that county on the map, it takes me to that county after a second click?
+            const geometry = response.results[0].geometry;
+            Map.functions.updateMapViewState([geometry.lng, geometry.lat]); 
         }
         else console.log('Error sending API request');
     }
 
+    const handleStateClick = (stateName: string) => {
+        setSelectedState(stateName);
+        setSelectedRegion(stateName);
+        console.log(showCountyButton);
+        setShowCountyButton(!showCountyButton); 
+        console.log(showCountyButton);
+        if(showCountyButton === true){ //have to set this to true because the rerender is one step late?
+            //setSelectedState('');
+            setSelectedRegion(''); 
+            //setSelectedCounty('');
+        }
+    }
+
+    const displayCounties = () => {
+        setShowCounties(!showCounties);
+        setInputValue('---');
+    }
+
+    const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
+        if(e.target.value === ''){
+            setInputValue('---');
+        }
+        else{
+            setInputValue(e.target.value); //input value holds the text within the search box
+        }
+    }
+
+    const handleCountyClick = (countyName: string) => {
+        setSelectedCounty(countyName); 
+        sendCoordinatesRequest();
+        setSelectedRegion(countyName);
+        //console.log(selectedCounty); //why is this one click late? I have to click the county twice in order for it to log on the console?
+    }
+
+    const handleDropDownClick = (countyName: string) => {
+        setSelectedCounty(countyName);
+        setSelectedRegion(countyName);
+    }
+
+    const resetMapZoom = () => {
+        setSelectedState('');
+        setSelectedCounty('');
+        setSelectedRegion('');
+        console.log(selectedCounty);
+        console.log(selectedState);
+        Map.functions.setMapViewState({
+            longitude: -98.5795,
+            latitude: 39.8283,
+            zoom: 4.3,
+            pitch: 30,
+            bearing: 0})
+    }
+
+    const filteredCounties = countyList.filter(county => county.toLowerCase().includes(inputValue.toLowerCase()));
+
     return (
         <>
             <DeckMap Map={Map} />
-            <Stack direction='column' alignItems='center'>
-                <StyledPaper elevation={3}>
-                    <Stack direction='column' alignItems='center' spacing={2}>
-                        <Typography align='center'>Title: {title}</Typography>
-                        <Button onClick={sendCoordinatesRequest} variant='outlined'>Send Request</Button>
+            <Stack direction='row' spacing={2}>
+                <StyledPaper elevation={3} sx={{fontSize: '15pt', maxWidth: '8vw', maxHeight: '46vw'}}>
+                    <Stack direction= 'column' sx={{lineHeight: '0.8'}}>
+                        {stateNameList.slice(0,26).map((stateName, index) => (
+                            <div>
+                            <Button sx={{fontSize: '6pt'}} key={index} 
+                                onClick={() => handleStateClick(stateName)} 
+                                variant='text'>{stateName}
+                            </Button>
+                            {showCountyButton && selectedState === stateName && (
+                                <div>
+                                    <Button sx={{fontSize: '5pt', background: 'black'}} 
+                                            onClick={() => displayCounties()}
+                                            variant='text'>
+                                            {showCounties ? 'Hide Counties' : 'Show Counties'}
+                                    </Button>
+                                    {showCounties && (
+                                        <StyledPaper sx={{opacity: 100, zIndex: 7000, backgroundColor: 'black'}}>
+                                            {countyList.map((countyName, index) => (
+                                                <Button sx={{fontSize: '5pt'}} key={index} 
+                                                onClick={() => handleCountyClick(countyName)} 
+                                                variant='text'>{countyName}
+                                                </Button>
+                                            ))}
+                                        </StyledPaper>
+                                    )}
+                                </div>
+                            )}
+                            </div>
+                        ))}
                     </Stack>
                 </StyledPaper>
+                <StyledPaper elevation={3} sx={{fontSize: '15pt', maxWidth: '8vw', maxHeight: '46vw', zIndex: 2000}}>
+                    <Stack direction= 'column' sx={{lineHeight: '0.1'}}>
+                        {stateNameList.slice(27).map((stateName, index) => (
+                            <div>
+                                <Button sx={{fontSize: '6pt'}} key={index} 
+                                    onClick={() => handleStateClick(stateName)} 
+                                    variant='text'>{stateName}
+                                </Button>
+                                {showCountyButton && selectedState === stateName && (
+                                    <div>
+                                        <Button sx={{fontSize: '5pt', background: 'black'}} 
+                                            onClick={() => displayCounties()}
+                                            variant='contained'>
+                                            {showCounties ? 'Hide Counties' : 'Show Counties'}
+                                        </Button>
+                                        {showCounties && (
+                                            <StyledPaper sx={{opacity: 100, zIndex: 7000, backgroundColor: 'black'}}>
+                                                {countyList.map((countyName, index) => (
+                                                    <Button sx={{fontSize: '5pt'}} key={index} 
+                                                    onClick={() => handleCountyClick(countyName)} 
+                                                    variant='text'>{countyName}
+                                                    </Button>
+                                                ))}
+                                            </StyledPaper>
+                                        )}
+
+
+                                    </div>
+                                )}
+                            </div>
+                        ))}
+                    </Stack>
+                </StyledPaper>
+                <StyledPaper elevation={7} sx={{maxWidth: '17vw', maxHeight: '17vw', zIndex: 1000, marginLeft: 'auto'}}>
+                    <Stack direction='column' alignItems='center' spacing={1}>
+                        <Typography sx={{fontSize: '15pt'}} align='center'>State/County Search Site </Typography>
+                        <Typography align='center'>{selectedRegion} </Typography>
+                        <div className="textfield--wrapper">
+                            <div className="textfield--header">
+                            </div>
+                            <input 
+                                type="search" 
+                                onChange={handleInputChange}
+                                placeholder='search or select a county' />
+                            <ul>
+                                {filteredCounties.map((name, index) => (
+                                    <Button sx={{fontSize: '7pt'}} key={index}
+                                    onClick={() => handleDropDownClick(name)}
+                                    variant='text'>{name}
+                                    </Button>
+                                ))}
+                            </ul>
+                        </div>
+                        <Button onClick={sendCoordinatesRequest} variant='contained'>Send Request</Button>
+                        <Button onClick={resetMapZoom} variant='contained'>Reset Map</Button>
+                    </Stack>
+                </StyledPaper>
+            </Stack>
+            
+            {/*<Stack>*/}
                 {/* Uncomment below to see a chart example */}
-                {/* <Paper className={classes.root} elevation={3}>
+                {/*<Paper className={classes.root} elevation={3}>
                     <ExampleLineChart/>
                 </Paper> */}
-            </Stack>
+            {/*</Stack>*/}
         </>
     );
 
@@ -103,8 +273,8 @@ export default function Main({ title }: MainProps) {
 const StyledPaper = styled(Paper)({
     width: '25vw',
     margin: '10px',
-    padding: '10px',
+    padding: '5px',
     zIndex: 5000,
-    opacity: 0.8
+    opacity: 0.8,
 })
 

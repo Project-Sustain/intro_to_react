@@ -38,6 +38,7 @@ import { BASEMAP } from '@deck.gl/carto/typed';
 import { DeckMapHook, ViewState } from '../hooks/UseDeckMap';
 import MapLibreGL from 'maplibre-gl';
 
+
 interface DeckMapProps {
     Map: DeckMapHook
 }
@@ -53,7 +54,7 @@ export default function DeckMap({Map}: DeckMapProps) {
                 layers={[]}
               >
                 <ReactMapGL 
-                    mapStyle={BASEMAP.POSITRON}
+                    mapStyle={BASEMAP.VOYAGER}
                     //@ts-expect-error
                     mapLib={MapLibreGL} 
                 />

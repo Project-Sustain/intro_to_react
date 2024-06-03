@@ -32,33 +32,137 @@ END OF TERMS AND CONDITIONS
 */
 
 
-import { useState, useEffect } from "react";
-import { Stack, Paper, Typography, styled } from "@mui/material";
+import React, { useState, useEffect } from "react";
+import { Stack, Paper, Typography, styled, TextField, Grid, } from "@mui/material";
 import { UseDeckMap } from "../hooks/UseDeckMap";
 import { UseApi } from "../hooks/UseApi";
 import DeckMap from "./DeckMap";
 import { Button } from "@mui/material";
-import ExampleLineChart from "./ExampleLineChart";
+import stateData from '../library/state_data.json'
+import countyData from '../library/county_data.json'
+
+import VowelConsonantPieChart from "./PieChart";
+import CountyLettersLineChart from "./LineChart";
+import CountyLettersHistogram from "./Histogram";
+
+import StateComponent from "./State";
+import CountyComponent from "./County";
 
 interface MainProps {
     title: string
 }
+
+interface State{
+    name: string;
+    GISJOIN: string;
+}
+
+interface County{
+    name: string;
+    GISJOIN: string;
+}
+
+const ContentEnum = {
+    STATES: 'STATES',
+    PIE_CHART: 'PIE_CHART',
+    LINE_CHART: 'LINE_CHART',
+    HISTOGRAM: 'HISTOGRAM',
+};
+
 
 export default function Main({ title }: MainProps) {
 
     const Map = UseDeckMap();
     const Api = UseApi();
 
-    const [selectedState, setSelectedState] = useState('');
-    const [countyList, setCountyList] = useState([]);
+    const [selectedState, setSelectedState] = useState<string | null>(null);
+    const [countyList, setCountyList] = useState<County[]>([]);
+    const [states, setStates] = useState<State[]>(stateData);
+    const [searchTerm, setSearchTerm] = useState<string>("");
 
 
     useEffect(() => {
-        /**
+        /** 
          * Get the list of associated counties
          * Call to setCountyList() with the list of associated counties
          */
+
+        if (selectedState) {
+            const selectedStateGISJOIN = selectedState.substring(0, 4);
+            const filteredCounties = countyData.filter((county : County) =>
+                county.GISJOIN.startsWith(selectedStateGISJOIN)
+        );
+        setCountyList(filteredCounties);
+    } else {
+        setCountyList([]);
+    }
     }, [selectedState]);
+
+    const handleStateClick = (stateGISJOIN: string) => {
+        setSelectedState(stateGISJOIN);
+
+        setSearchTerm(''); 
+    };
+
+    const clearSelection = () => {
+        setSelectedState(null);
+        setSearchTerm(''); 
+    };
+
+    const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        setSearchTerm(event.target.value);
+    };
+
+    const filteredCountyList = countyList.filter(county =>
+        county.name.toLocaleLowerCase().includes(searchTerm.toLocaleLowerCase())
+    );
+
+    const handleCountyClick = async (countyName: string, stateName: string) => {
+        try{
+        const response = await Api.functions.sendRequest(countyName, stateName);
+        if (response) {
+            console.log('API Response:',response);
+            //const{lat,lon}= response;
+
+            const firstResult = response.results[0];
+            //const {lat, lon} = firstResult.geometry;
+            console.log('First Result:', firstResult);
+
+            if (firstResult && firstResult.geometry) {
+                const {lat, lng} = firstResult.geometry;
+                console.log ('Coordinates:', {lat,lng});
+            
+
+            if(typeof lat === 'number' && typeof lng === 'number') {
+                console.log('updating map view of lat: ${lat}, lon: ${lng}');
+                Map.functions.updateMapViewState([lng, lat]);
+            } else {
+                console.error('Invalid coordinates:', {lat, lng});
+                alert("received invalid coordinates from the API");
+            }
+        } else {
+            console.error('Invalid geometry data:', firstResult);
+            alert('Received invalid geometry data from the API');
+        }
+        } else {
+            console.log("error sending API request");
+            alert("Error sending API request");
+        }
+    }
+        catch(error){
+            console.error("Error in handleCountyClick:", error);
+            alert("An error occured while doing handleCountyClick");
+        }
+    };
+
+    // const sendCoordinatesRequest = async () => {
+    //     const response = await Api.functions.sendRequest('Larimer', 'Colorado');
+    //     if (response) {
+    //         console.log({response});
+    //     } else {
+    //         console.log('Error sending API request')
+    //     }
+    // }
 
 
     /**
@@ -72,39 +176,85 @@ export default function Main({ title }: MainProps) {
      * 
      * We'll talk about what this function is doing during the meeting.
      */
-    const sendCoordinatesRequest = async() => {
-        const response = await Api.functions.sendRequest('Larimer', 'Colorado');
-        if (response) {
-            console.log({response});
-        }
-        else console.log('Error sending API request');
-    }
+    // const sendCoordinatesRequest = async() => {
+    //     const response = await Api.functions.sendRequest('Larimer', 'Colorado');
+    //     if (response) {
+    //         console.log({response});
+    //     }
+    //     else console.log('Error sending API request');
+    // }
 
     return (
         <>
             <DeckMap Map={Map} />
-            <Stack direction='column' alignItems='center'>
+            <StyledPaper elevation={3}>
+                <Stack direction="row" spacing={2} justifyContent="center">
+                    <Button variant="contained" onClick={() => setSelectedState(ContentEnum.STATES)}>States</Button>
+                    <Button variant="contained" onClick={() => setSelectedState(ContentEnum.PIE_CHART)}>Pie Chart</Button>
+                    <Button variant="contained" onClick={() => setSelectedState(ContentEnum.LINE_CHART)}>Line Chart</Button>
+                    <Button variant="contained" onClick={() => setSelectedState(ContentEnum.HISTOGRAM)}>Histogram</Button>
+                </Stack>
+            </StyledPaper>
+            {selectedState === ContentEnum.STATES && (
+                <StateComponent states={states} handleStateClick={handleStateClick} />
+            )}
+            {selectedState === ContentEnum.PIE_CHART && (
                 <StyledPaper elevation={3}>
-                    <Stack direction='column' alignItems='center' spacing={2}>
-                        <Typography align='center'>Title: {title}</Typography>
-                        <Button onClick={sendCoordinatesRequest} variant='outlined'>Send Request</Button>
-                    </Stack>
+                    <Typography align="center">Countries by First letter as vowel and Consonants</Typography>
+                    <VowelConsonantPieChart />
                 </StyledPaper>
-                {/* Uncomment below to see a chart example */}
-                {/* <Paper className={classes.root} elevation={3}>
-                    <ExampleLineChart/>
-                </Paper> */}
-            </Stack>
+            )}
+            {/* {selectedState === ContentEnum.LINE_CHART && (
+                <Grid container spacing={2} alignItems="flex-start">
+                    <Grid item xs={6}>
+                        <StyledPaper elevation={3}>
+                            <Typography align="center">Number of letter per county</Typography>
+                            <CountyLettersLineChart />
+                        </StyledPaper>
+                    </Grid>
+                </Grid>
+            )} */}
+            {selectedState === ContentEnum.LINE_CHART && (
+                <StyledPaper elevation={3}>
+                    <Typography align="center">Number of letter per county</Typography>
+                    <CountyLettersLineChart />
+                </StyledPaper>
+            )}
+            {selectedState === ContentEnum.HISTOGRAM && (
+                <StyledPaper elevation={3}>
+                    <Typography align="center">Distribution of Countries by Name length</Typography>
+                    <CountyLettersHistogram />
+                </StyledPaper>
+            )}
+            {(selectedState !== ContentEnum.STATES &&
+                selectedState !== ContentEnum.PIE_CHART &&
+                selectedState !== ContentEnum.LINE_CHART &&
+                selectedState !== ContentEnum.HISTOGRAM) && (
+                <CountyComponent
+                    countyList={countyList}
+                    filteredCountyList={filteredCountyList}
+                    searchTerm={searchTerm}
+                    handleSearchChange={handleSearchChange}
+                    handleCountyClick={handleCountyClick}
+                    clearSelection={clearSelection}
+                />
+            )}
         </>
     );
+};
 
-}
 
 const StyledPaper = styled(Paper)({
     width: '25vw',
     margin: '10px',
     padding: '10px',
     zIndex: 5000,
-    opacity: 0.8
-})
+    opacity: 0.8,'& ul': {
+        listStyle: 'none', // Remove bullet points from lists
+        padding: 0,
+    },
+    '& ul li': {
+        cursor: 'pointer',
+    },
+});
 

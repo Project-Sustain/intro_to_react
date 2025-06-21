@@ -33,12 +33,21 @@ END OF TERMS AND CONDITIONS
 
 
 import { useState, useEffect } from "react";
+import * as React from 'react';
 import { Stack, Paper, Typography, styled } from "@mui/material";
 import { UseDeckMap } from "../hooks/UseDeckMap";
 import { UseApi } from "../hooks/UseApi";
 import DeckMap from "./DeckMap";
 import { Button } from "@mui/material";
 import ExampleLineChart from "./ExampleLineChart";
+import statesData from "../library/state_data.json"
+import List from '@mui/material/List';                // List container
+import ListItemButton from '@mui/material/ListItemButton';  // Clickable list item
+import ListItemText from '@mui/material/ListItemText';      // Text inside list item
+import Collapse from '@mui/material/Collapse';        // For expand/collapse animation
+import ExpandLess from '@mui/icons-material/ExpandLess';    // Collapse icon (arrow up)
+import ExpandMore from '@mui/icons-material/ExpandMore';    // Expand icon (arrow down)
+
 
 interface MainProps {
     title: string
@@ -51,6 +60,12 @@ export default function Main({ title }: MainProps) {
 
     const [selectedState, setSelectedState] = useState('');
     const [countyList, setCountyList] = useState([]);
+
+    // Object to store state data and expression to populate it
+    const stateGISJOIN: Record<string, string> = {};
+    statesData.forEach((state) => {
+        stateGISJOIN[state.GISJOIN] = state.name;
+    });
 
 
     useEffect(() => {
@@ -72,13 +87,19 @@ export default function Main({ title }: MainProps) {
      * 
      * We'll talk about what this function is doing during the meeting.
      */
-    const sendCoordinatesRequest = async() => {
+    const sendCoordinatesRequest = async () => {
         const response = await Api.functions.sendRequest('Larimer', 'Colorado');
         if (response) {
-            console.log({response});
+            console.log({ response });
         }
         else console.log('Error sending API request');
     }
+
+    const [openState, setOpenState] = useState<string | null>(null);
+
+    const handleToggle = (gisjoin: string) => {
+        setOpenState((prev) => (prev === gisjoin ? null : gisjoin));
+    };
 
     return (
         <>
@@ -88,6 +109,24 @@ export default function Main({ title }: MainProps) {
                     <Stack direction='column' alignItems='center' spacing={2}>
                         <Typography align='center'>Title: {title}</Typography>
                         <Button onClick={sendCoordinatesRequest} variant='outlined'>Send Request</Button>
+                        
+                        <List sx={{ width: '50%', maxWidth: 180, bgcolor: 'background.paper' }}>
+                            {statesData.map(state => (
+                                <React.Fragment key={state.GISJOIN}>
+                                    <ListItemButton onClick={() => handleToggle(state.GISJOIN)}>
+                                        <ListItemText primary={state.name} />
+                                        {openState === state.GISJOIN ? <ExpandLess /> : <ExpandMore />}
+                                    </ListItemButton>
+                                    <Collapse in={openState === state.GISJOIN} timeout="auto" unmountOnExit>
+                                        <List component="div" disablePadding>
+                                            {/* nested counties here later */}
+                                        </List>
+                                    </Collapse>
+                                </React.Fragment>
+                            ))}
+                        </List>
+
+
                     </Stack>
                 </StyledPaper>
                 {/* Uncomment below to see a chart example */}
@@ -107,4 +146,3 @@ const StyledPaper = styled(Paper)({
     zIndex: 5000,
     opacity: 0.8
 })
-

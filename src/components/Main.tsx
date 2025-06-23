@@ -34,7 +34,7 @@ END OF TERMS AND CONDITIONS
 
 import { useState, useEffect } from "react";
 import * as React from 'react';
-import { Stack, Paper, Typography, styled } from "@mui/material";
+import { Stack, Paper, Typography, styled, Box, TextField } from "@mui/material";
 import { UseDeckMap } from "../hooks/UseDeckMap";
 import { UseApi } from "../hooks/UseApi";
 import DeckMap from "./DeckMap";
@@ -47,34 +47,18 @@ import ListItemText from '@mui/material/ListItemText';      // Text inside list 
 import Collapse from '@mui/material/Collapse';        // For expand/collapse animation
 import ExpandLess from '@mui/icons-material/ExpandLess';    // Collapse icon (arrow up)
 import ExpandMore from '@mui/icons-material/ExpandMore';    // Expand icon (arrow down)
-
+import StateList from "./StateList";
 
 interface MainProps {
     title: string
 }
 
+
+
 export default function Main({ title }: MainProps) {
 
     const Map = UseDeckMap();
     const Api = UseApi();
-
-    const [selectedState, setSelectedState] = useState('');
-    const [countyList, setCountyList] = useState([]);
-
-    // Object to store state data and expression to populate it
-    const stateGISJOIN: Record<string, string> = {};
-    statesData.forEach((state) => {
-        stateGISJOIN[state.GISJOIN] = state.name;
-    });
-
-
-    useEffect(() => {
-        /**
-         * Get the list of associated counties
-         * Call to setCountyList() with the list of associated counties
-         */
-    }, [selectedState]);
-
 
     /**
      * This is the function that connects to the online API and retrieves information associated
@@ -87,19 +71,24 @@ export default function Main({ title }: MainProps) {
      * 
      * We'll talk about what this function is doing during the meeting.
      */
+
+    const [selectedState, setSelectedState] = useState<string>("")
+    const [selectedCounty, setSelecedCounty] = useState<string>("")
+
     const sendCoordinatesRequest = async () => {
-        const response = await Api.functions.sendRequest('Larimer', 'Colorado');
+        const response = await Api.functions.sendRequest(selectedCounty, selectedState); // was ('Larimer', 'Colorado')
         if (response) {
             console.log({ response });
+            Map.functions.updateMapViewState([response.longitude, response.lattitude])
         }
         else console.log('Error sending API request');
     }
 
-    const [openState, setOpenState] = useState<string | null>(null);
 
-    const handleToggle = (gisjoin: string) => {
-        setOpenState((prev) => (prev === gisjoin ? null : gisjoin));
-    };
+    // Helper for collapsable list
+    //If opened state is clicked, it is closed
+    //If closed state is clicked, it is
+    
 
     return (
         <>
@@ -109,30 +98,13 @@ export default function Main({ title }: MainProps) {
                     <Stack direction='column' alignItems='center' spacing={2}>
                         <Typography align='center'>Title: {title}</Typography>
                         <Button onClick={sendCoordinatesRequest} variant='outlined'>Send Request</Button>
-                        
-                        <List sx={{ width: '50%', maxWidth: 180, bgcolor: 'background.paper' }}>
-                            {statesData.map(state => (
-                                <React.Fragment key={state.GISJOIN}>
-                                    <ListItemButton onClick={() => handleToggle(state.GISJOIN)}>
-                                        <ListItemText primary={state.name} />
-                                        {openState === state.GISJOIN ? <ExpandLess /> : <ExpandMore />}
-                                    </ListItemButton>
-                                    <Collapse in={openState === state.GISJOIN} timeout="auto" unmountOnExit>
-                                        <List component="div" disablePadding>
-                                            {/* nested counties here later */}
-                                        </List>
-                                    </Collapse>
-                                </React.Fragment>
-                            ))}
-                        </List>
-
-
+                        <StateList />
                     </Stack>
                 </StyledPaper>
                 {/* Uncomment below to see a chart example */}
-                {/* <Paper className={classes.root} elevation={3}>
+                 <Paper elevation={3}>
                     <ExampleLineChart/>
-                </Paper> */}
+                </Paper> 
             </Stack>
         </>
     );

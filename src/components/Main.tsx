@@ -37,8 +37,9 @@ import { Stack, Paper, Typography, styled } from "@mui/material";
 import { UseDeckMap } from "../hooks/UseDeckMap";
 import { UseApi } from "../hooks/UseApi";
 import DeckMap from "./DeckMap";
-import { Button } from "@mui/material";
+import { Button, List, ListItem, ListItemText } from "@mui/material";
 import ExampleLineChart from "./ExampleLineChart";
+import state_data from "../library/state_data.json";
 
 interface MainProps {
     title: string
@@ -88,6 +89,17 @@ export default function Main({ title }: MainProps) {
                     <Stack direction='column' alignItems='center' spacing={2}>
                         <Typography align='center'>Title: {title}</Typography>
                         <Button onClick={sendCoordinatesRequest} variant='outlined'>Send Request</Button>
+                        <List style={{"overflow":"hidden"}}>
+                            {
+                                state_data.map(
+                                    state => (
+                                        <ListItem>
+                                            <ListItemText primary={state.name}/>
+                                        </ListItem>
+                                    )
+                                )
+                            }
+                        </List>
                     </Stack>
                 </StyledPaper>
                 {/* Uncomment below to see a chart example */}

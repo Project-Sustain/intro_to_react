@@ -37,7 +37,7 @@ import { Stack, Paper, Typography, styled } from "@mui/material";
 import { UseDeckMap } from "../hooks/UseDeckMap";
 import { UseApi } from "../hooks/UseApi";
 import DeckMap from "./DeckMap";
-import { Button, List, ListItem, ListItemText } from "@mui/material";
+import { Button, List, ListItem, ListItemText, ListItemButton } from "@mui/material";
 import ExampleLineChart from "./ExampleLineChart";
 import state_data from "../library/state_data.json";
 
@@ -89,16 +89,23 @@ export default function Main({ title }: MainProps) {
                     <Stack direction='column' alignItems='center' spacing={2}>
                         <Typography align='center'>Title: {title}</Typography>
                         <Button onClick={sendCoordinatesRequest} variant='outlined'>Send Request</Button>
+                        <Typography 
+                            align='center'
+                            onClick={() => setSelectedState('')}
+                        >
+                            {selectedState}
+                        </Typography>
                         <List style={{"overflow":"hidden"}}>
-                            {
-                                state_data.map(
-                                    state => (
-                                        <ListItem>
-                                            <ListItemText primary={state.name}/>
-                                        </ListItem>
-                                    )
-                                )
-                            }
+                            {state_data.map( state => (
+                                <ListItem>
+                                    <ListItemButton 
+                                        selected={selectedState === state.name}
+                                        onClick={() => setSelectedState(state.name)}
+                                    >
+                                        <ListItemText primary={state.name}/>
+                                    </ListItemButton>
+                                </ListItem>
+                            ))}
                         </List>
                     </Stack>
                 </StyledPaper>
@@ -114,9 +121,10 @@ export default function Main({ title }: MainProps) {
 
 const StyledPaper = styled(Paper)({
     width: '25vw',
+    maxHeight: '50vw',
+    overflow: 'auto',
     margin: '10px',
     padding: '10px',
     zIndex: 5000,
     opacity: 0.8
 })
-

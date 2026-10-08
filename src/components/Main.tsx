@@ -40,6 +40,7 @@ import DeckMap from "./DeckMap";
 import { Button, List, ListItem, ListItemText, ListItemButton } from "@mui/material";
 import ExampleLineChart from "./ExampleLineChart";
 import state_data from "../library/state_data.json";
+import county_data from "../library/county_data.json";
 
 interface MainProps {
     title: string
@@ -50,17 +51,15 @@ export default function Main({ title }: MainProps) {
     const Map = UseDeckMap();
     const Api = UseApi();
 
-    const [selectedState, setSelectedState] = useState('');
-    const [countyList, setCountyList] = useState([]);
+    const [selectedState, setSelectedState] = useState({'name': '',  'GISJOIN': ''});
+    const [countyList, setCountyList] = useState(['']);
 
 
     useEffect(() => {
-        /**
-         * Get the list of associated counties
-         * Call to setCountyList() with the list of associated counties
-         */
+        //  Get the list of associated counties
+        //  Call to setCountyList() with the list of associated counties
+        setCountyList(county_data.filter((county) => county.GISJOIN.includes(selectedState.GISJOIN)).map((county) => county.name))
     }, [selectedState]);
-
 
     /**
      * This is the function that connects to the online API and retrieves information associated
@@ -91,20 +90,25 @@ export default function Main({ title }: MainProps) {
                         <Button onClick={sendCoordinatesRequest} variant='outlined'>Send Request</Button>
                         <Typography 
                             align='center'
-                            onClick={() => setSelectedState('')}
+                            onClick={() => setSelectedState({"name": "",  "GISJOIN": ""})}
                         >
-                            {selectedState}
+                            {selectedState.name}
                         </Typography>
                         <List style={{"overflow":"hidden"}}>
-                            {state_data.map( state => (
-                                <ListItem>
-                                    <ListItemButton 
-                                        selected={selectedState === state.name}
-                                        onClick={() => setSelectedState(state.name)}
-                                    >
-                                        <ListItemText primary={state.name}/>
-                                    </ListItemButton>
-                                </ListItem>
+                            {selectedState.name === "" ?
+                                state_data.map( state => (
+                                    <ListItem>
+                                        <ListItemButton 
+                                            // selected={selectedState === state.name}
+                                            onClick={() => setSelectedState(state)}
+                                        >
+                                            <ListItemText primary={state.name}/>
+                                        </ListItemButton>
+                                    </ListItem>
+                                )) : countyList.map( county => (
+                                    <ListItem>
+                                        <ListItemText primary={county}/>
+                                    </ListItem>
                             ))}
                         </List>
                     </Stack>

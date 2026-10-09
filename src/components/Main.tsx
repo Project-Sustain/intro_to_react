@@ -38,8 +38,8 @@ import { UseDeckMap } from "../hooks/UseDeckMap";
 import { UseApi } from "../hooks/UseApi";
 import DeckMap from "./DeckMap";
 import ExampleLineChart from "./ExampleLineChart";
-import state_data from "../library/state_data.json";
-import county_data from "../library/county_data.json";
+import stateData from "../library/state_data.json";
+import countyData from "../library/county_data.json";
 
 interface MainProps {
     title: string
@@ -52,12 +52,13 @@ export default function Main({ title }: MainProps) {
 
     const [selectedState, setSelectedState] = useState({'name': '',  'GISJOIN': ''});
     const [countyList, setCountyList] = useState(['']);
+    const [countyName, setCountyName] = useState('')
 
 
     useEffect(() => {
         //  Get the list of associated counties
         //  Call to setCountyList() with the list of associated counties
-        setCountyList(county_data.filter((county) => county.GISJOIN.includes(selectedState.GISJOIN)).map((county) => county.name))
+        setCountyList(countyData.filter((county) => county.GISJOIN.includes(selectedState.GISJOIN)).map((county) => county.name))
     }, [selectedState]);
 
     /**
@@ -95,10 +96,9 @@ export default function Main({ title }: MainProps) {
                         </Typography>
                         {selectedState.name === "" ?
                             <List style={{"overflow":"hidden"}}>
-                                    {state_data.map( state => (
+                                    {stateData.map( state => (
                                         <ListItem>
                                             <ListItemButton 
-                                                // selected={selectedState === state.name}
                                                 onClick={() => setSelectedState(state)}
                                             >
                                                 <ListItemText primary={state.name}/>
@@ -108,9 +108,14 @@ export default function Main({ title }: MainProps) {
                             </List> 
                             : 
                             <>
-                                <TextField id="outlined-search" label="Search field" type="search" />
+                                <TextField 
+                                    id="county search" label="Search for a county" 
+                                    value = {countyName}
+                                    onChange={(event) => setCountyName(event.target.value)}
+                                />
                                 <List style={{"overflow":"hidden"}}>
-                                    {countyList.map( county => (
+                                    {/* .filter((county) => !county.includes()) */}
+                                    {countyList.filter((county) => county.toUpperCase().startsWith(countyName.toUpperCase())).map( county => (
                                             <ListItem>
                                                 <ListItemText primary={county}/>
                                             </ListItem>

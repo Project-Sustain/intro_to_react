@@ -58,9 +58,18 @@ export default function Main({ title }: MainProps) {
     useEffect(() => {
         //  Get the list of associated counties
         //  Call to setCountyList() with the list of associated counties
-        setCountyList(countyData.filter((county) => county.GISJOIN.includes(selectedState.GISJOIN)).map((county) => county.name))
+        setCountyList(countyData.filter((county) => 
+            county.GISJOIN
+                .includes(selectedState.GISJOIN))
+                .sort((a,b) => a.name <= b.name ? -1 : 1)
+                .map((county) => county.name)
+        )
     }, [selectedState]);
 
+    function clear() {
+        setSelectedState({"name": "",  "GISJOIN": ""})
+        setCountyName('')
+    }
     /**
      * This is the function that connects to the online API and retrieves information associated
      *      with a state/county. Included in that information is the coordinates. Currently
@@ -90,13 +99,13 @@ export default function Main({ title }: MainProps) {
                         <Button onClick={sendCoordinatesRequest} variant='outlined'>Send Request</Button>
                         <Typography 
                             align='center'
-                            onClick={() => setSelectedState({"name": "",  "GISJOIN": ""})}
+                            onClick={() => clear()}
                         >
                             {selectedState.name}
                         </Typography>
                         {selectedState.name === "" ?
                             <List style={{"overflow":"hidden"}}>
-                                    {stateData.map( state => (
+                                    {stateData.sort((a,b) => a.name <= b.name ? -1 : 1).map( state => (
                                         <ListItem>
                                             <ListItemButton 
                                                 onClick={() => setSelectedState(state)}

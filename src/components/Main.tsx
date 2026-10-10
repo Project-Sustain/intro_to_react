@@ -61,7 +61,7 @@ export default function Main({ title }: MainProps) {
         setCountyList(countyData.filter((county) => 
             county.GISJOIN
                 .includes(selectedState.GISJOIN))
-                .sort((a,b) => a.name <= b.name ? -1 : 1)
+                // .sort((a,b) => a.name <= b.name ? -1 : 1)
                 .map((county) => county.name)
         )
     }, [selectedState]);
@@ -105,14 +105,16 @@ export default function Main({ title }: MainProps) {
                         </Typography>
                         {selectedState.name === "" ?
                             <List style={{"overflow":"hidden"}}>
-                                    {stateData.sort((a,b) => a.name <= b.name ? -1 : 1).map( state => (
-                                        <ListItem>
-                                            <ListItemButton 
-                                                onClick={() => setSelectedState(state)}
-                                            >
-                                                <ListItemText primary={state.name}/>
-                                            </ListItemButton>
-                                        </ListItem>
+                                    {stateData
+                                        // .sort((a,b) => a.name <= b.name ? -1 : 1)
+                                        .map( state => (
+                                            <ListItem>
+                                                <ListItemButton 
+                                                    onClick={() => setSelectedState(state)}
+                                                >
+                                                    <ListItemText primary={state.name}/>
+                                                </ListItemButton>
+                                            </ListItem>
                                     ))}
                             </List> 
                             : 
@@ -123,10 +125,15 @@ export default function Main({ title }: MainProps) {
                                     onChange={(event) => setCountyName(event.target.value)}
                                 />
                                 <List style={{"overflow":"hidden"}}>
-                                    {/* .filter((county) => !county.includes()) */}
-                                    {countyList.filter((county) => county.toUpperCase().startsWith(countyName.toUpperCase())).map( county => (
+                                    {countyList
+                                        .filter((county) => county.toUpperCase().startsWith(countyName.toUpperCase()))
+                                        .map( county => (
                                             <ListItem>
-                                                <ListItemText primary={county}/>
+                                                <ListItemButton 
+                                                    onClick={() => sendCoordinatesRequest()}
+                                                >
+                                                    <ListItemText primary={county}/>
+                                                </ListItemButton>
                                             </ListItem>
                                     ))}
                                 </List>

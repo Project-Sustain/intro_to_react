@@ -52,8 +52,7 @@ export default function Main({ title }: MainProps) {
 
     const [selectedState, setSelectedState] = useState({'name': '',  'GISJOIN': ''});
     const [countyList, setCountyList] = useState(['']);
-    const [countyName, setCountyName] = useState('')
-
+    const [countyName, setCountyName] = useState('');
 
     useEffect(() => {
         //  Get the list of associated counties
@@ -70,6 +69,7 @@ export default function Main({ title }: MainProps) {
         setSelectedState({"name": "",  "GISJOIN": ""})
         setCountyName('')
     }
+
     /**
      * This is the function that connects to the online API and retrieves information associated
      *      with a state/county. Included in that information is the coordinates. Currently
@@ -81,8 +81,8 @@ export default function Main({ title }: MainProps) {
      * 
      * We'll talk about what this function is doing during the meeting.
      */
-    const sendCoordinatesRequest = async() => {
-        const response = await Api.functions.sendRequest('Larimer', 'Colorado');
+    const sendCoordinatesRequest = async(county: string, state: string) => {
+        const response = await Api.functions.sendRequest(county, state);
         if (response) {
             console.log({response});
         }
@@ -96,7 +96,7 @@ export default function Main({ title }: MainProps) {
                 <StyledPaper elevation={3}>
                     <Stack direction='column' alignItems='center' spacing={2}>
                         <Typography align='center'>Title: {title}</Typography>
-                        <Button onClick={sendCoordinatesRequest} variant='outlined'>Send Request</Button>
+                        {/* <Button onClick={sendCoordinatesRequest} variant='outlined'>Send Request</Button> */}
                         <Typography 
                             align='center'
                             onClick={() => clear()}
@@ -130,7 +130,8 @@ export default function Main({ title }: MainProps) {
                                         .map( county => (
                                             <ListItem>
                                                 <ListItemButton 
-                                                    onClick={() => sendCoordinatesRequest()}
+                                                    // onClick={() => Map.functions.updateMapViewState([0,0])}
+                                                    onClick={() => sendCoordinatesRequest(county, selectedState.name)}
                                                 >
                                                     <ListItemText primary={county}/>
                                                 </ListItemButton>

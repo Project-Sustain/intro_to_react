@@ -40,6 +40,7 @@ import DeckMap from "./DeckMap";
 import ExampleLineChart from "./ExampleLineChart";
 import stateData from "../library/state_data.json";
 import countyData from "../library/county_data.json";
+import { Coordinates } from "maplibre-gl";
 
 interface MainProps {
     title: string
@@ -53,6 +54,7 @@ export default function Main({ title }: MainProps) {
     const [selectedState, setSelectedState] = useState({'name': '',  'GISJOIN': ''});
     const [countyList, setCountyList] = useState(['']);
     const [countyName, setCountyName] = useState('');
+    const [coordinates, setCoordinates] = useState([-98.5795, 39.8283])
 
     useEffect(() => {
         //  Get the list of associated counties
@@ -81,18 +83,24 @@ export default function Main({ title }: MainProps) {
      * 
      * We'll talk about what this function is doing during the meeting.
      */
-    const sendCoordinatesRequest = async(county: string, state: string) => {
-        const response = await Api.functions.sendRequest(county, state);
+    const sendCoordinatesRequest = async(state: string, county: string) => {
+        const response = await Api.functions.sendRequest(state, county);
         if (response) {
             console.log({response});
+            setCoordinates([response.results[0].geometry.lng, response.results[0].geometry.lat]);
         }
         else console.log('Error sending API request');
     }
 
+    useEffect(() => {
+        if (selectedState.name != '')
+            Map.functions.updateMapViewState([coordinates[0], coordinates[1]]);
+    }, [coordinates]);
+
     return (
         <>
             <DeckMap Map={Map} />
-            <Stack direction='column' alignItems='center'>
+            <Stack direction='column' alignItems='left'>
                 <StyledPaper elevation={3}>
                     <Stack direction='column' alignItems='center' spacing={2}>
                         <Typography align='center'>Title: {title}</Typography>
@@ -130,8 +138,7 @@ export default function Main({ title }: MainProps) {
                                         .map( county => (
                                             <ListItem>
                                                 <ListItemButton 
-                                                    // onClick={() => Map.functions.updateMapViewState([0,0])}
-                                                    onClick={() => sendCoordinatesRequest(county, selectedState.name)}
+                                                    onClick={() => sendCoordinatesRequest(selectedState.name, county)}
                                                 >
                                                     <ListItemText primary={county}/>
                                                 </ListItemButton>

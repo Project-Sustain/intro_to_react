@@ -33,6 +33,7 @@ END OF TERMS AND CONDITIONS
 
 
 import { useState } from 'react';
+import {FlyToInterpolator} from '@deck.gl/core';
 
 export interface DeckMapHook {
     state: {
@@ -49,7 +50,9 @@ export interface ViewState {
     latitude: number,
     zoom: number,
     pitch: number,
-    bearing: number
+    bearing: number,
+    transitionInterpolator: FlyToInterpolator,
+    transitionDuration: string
 }
 
 type Coordinates = [number, number]
@@ -61,7 +64,9 @@ export const UseDeckMap = (): DeckMapHook => {
         latitude: 39.8283,
         zoom: 4.3,
         pitch: 30,
-        bearing: 0
+        bearing: 0,
+        transitionInterpolator: new FlyToInterpolator({speed: 2}),
+        transitionDuration: 'auto'
     });
 
 
@@ -72,10 +77,11 @@ export const UseDeckMap = (): DeckMapHook => {
             latitude: coordinates[1] - 0.0008,
             zoom: 17,
             pitch: 30,
-            bearing: 0
+            bearing: 0,
+            transitionInterpolator: new FlyToInterpolator({speed: 2}),
+            transitionDuration: 'auto'
         }
         setMapViewState(newViewState);
-        //FIXME Fly map
     }
 
 

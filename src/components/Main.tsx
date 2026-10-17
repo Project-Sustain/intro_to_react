@@ -38,9 +38,11 @@ import { UseDeckMap } from "../hooks/UseDeckMap";
 import { UseApi } from "../hooks/UseApi";
 import DeckMap from "./DeckMap";
 import ExampleLineChart from "./ExampleLineChart";
+import LetterPieChart from "./LetterPieChart";
 import stateData from "../library/state_data.json";
 import countyData from "../library/county_data.json";
 import { Coordinates } from "maplibre-gl";
+import { PieChart, Pie, ResponsiveContainer, LineChart, BarChart } from "recharts";
 
 interface MainProps {
     title: string
@@ -54,7 +56,11 @@ export default function Main({ title }: MainProps) {
     const [selectedState, setSelectedState] = useState({'name': '',  'GISJOIN': ''});
     const [countyList, setCountyList] = useState(['']);
     const [countyName, setCountyName] = useState('');
-    const [coordinates, setCoordinates] = useState([-98.5795, 39.8283])
+    const [coordinates, setCoordinates] = useState([-98.5795, 39.8283]);
+    const [pieData, setPieData] = useState({data:[
+        { id: 0, value: 21, label: 'consonants' },
+        { id: 1, value: 5, label: 'vowels' }
+    ]});
 
     useEffect(() => {
         //  Get the list of associated counties
@@ -66,6 +72,12 @@ export default function Main({ title }: MainProps) {
                 .map((county) => county.name)
         )
     }, [selectedState]);
+
+    useEffect(() => {
+        setPieData({data:[
+        { id: 0, value: countyList.map((county) => county[0]).filter((letter) => !("AEIOU").includes(letter)).length, label: 'consonants' },
+        { id: 1, value: countyList.map((county) => county[0]).filter((letter) => ("AEIOU").includes(letter)).length, label: 'vowels' }
+    ]})})
 
     function clear() {
         setSelectedState({"name": "",  "GISJOIN": ""})
@@ -94,13 +106,13 @@ export default function Main({ title }: MainProps) {
 
     useEffect(() => {
         if (selectedState.name != '')
-            Map.functions.updateMapViewState([coordinates[0], coordinates[1]]);
+            Map.functions.updateMapViewState([coordinates[0], coordinates[1]])
     }, [coordinates]);
 
     return (
         <>
             <DeckMap Map={Map} />
-            <Stack direction='column' alignItems='left'>
+            <Stack direction='row' alignItems='flex-start'>
                 <StyledPaper elevation={3}>
                     <Stack direction='column' alignItems='center' spacing={2}>
                         <Typography align='center'>Title: {title}</Typography>
@@ -149,11 +161,24 @@ export default function Main({ title }: MainProps) {
                         }
                     </Stack>
                 </StyledPaper>
-                {/* Uncomment below to see a chart example */}
-                {/* <Paper className={classes.root} elevation={3}>
-                    <ExampleLineChart/>
-                </Paper> */}
+                <StyledPaper elevation={3}>
+                    <Typography align='center'>County Names Begin With</Typography>
+                    {LetterPieChart(pieData)}
+                    {/* <LetterLineChart/> */}
+                    {/* <LetterHistogram/> */}
+                </StyledPaper>
             </Stack>
+            {/* <Stack 
+                direction='column' 
+                // justifyContent='top'
+                alignItems="flex-end"
+            >
+                <StyledPaper elevation={3}>
+                    {LetterPieChart(pieData)}
+                    <LetterLineChart/>
+                    <LetterHistogram/>
+                </StyledPaper>
+            </Stack> */}
         </>
     );
 

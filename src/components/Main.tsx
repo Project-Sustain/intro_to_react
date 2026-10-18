@@ -33,16 +33,14 @@ END OF TERMS AND CONDITIONS
 
 
 import { useState, useEffect } from "react";
-import { Stack, Paper, Typography, styled, Button, List, ListItem, ListItemText, ListItemButton, TextField } from "@mui/material";
+import { Stack, Paper, Typography, styled, List, ListItem, ListItemText, ListItemButton, TextField } from "@mui/material";
 import { UseDeckMap } from "../hooks/UseDeckMap";
 import { UseApi } from "../hooks/UseApi";
 import DeckMap from "./DeckMap";
-import ExampleLineChart from "./ExampleLineChart";
 import LetterPieChart from "./LetterPieChart";
+import LetterLineChart from "./LetterLineChart";
 import stateData from "../library/state_data.json";
 import countyData from "../library/county_data.json";
-import { Coordinates } from "maplibre-gl";
-import { PieChart, Pie, ResponsiveContainer, LineChart, BarChart } from "recharts";
 
 interface MainProps {
     title: string
@@ -57,10 +55,8 @@ export default function Main({ title }: MainProps) {
     const [countyList, setCountyList] = useState(['']);
     const [countyName, setCountyName] = useState('');
     const [coordinates, setCoordinates] = useState([-98.5795, 39.8283]);
-    const [pieData, setPieData] = useState({data:[
-        { id: 0, value: 21, label: 'consonants' },
-        { id: 1, value: 5, label: 'vowels' }
-    ]});
+    const [pieData, setPieData] = useState({data:[{ id: 0, value: 0, label: '' }]});
+    const [lineData, setLineData] = useState({data:[{ name: '', value: 0 }]});
 
     useEffect(() => {
         //  Get the list of associated counties
@@ -75,9 +71,13 @@ export default function Main({ title }: MainProps) {
 
     useEffect(() => {
         setPieData({data:[
-        { id: 0, value: countyList.map((county) => county[0]).filter((letter) => !("AEIOU").includes(letter)).length, label: 'consonants' },
-        { id: 1, value: countyList.map((county) => county[0]).filter((letter) => ("AEIOU").includes(letter)).length, label: 'vowels' }
-    ]})})
+            { id: 0, value: countyList.map((county) => county[0]).filter((letter) => !("AEIOU").includes(letter)).length, label: 'consonants' },
+            { id: 1, value: countyList.map((county) => county[0]).filter((letter) => ("AEIOU").includes(letter)).length, label: 'vowels' }
+        ]})
+        setLineData({data: 
+            countyList.map((county) => ({name: county, value: county.replace(/\s/g, "").length}))
+        })
+    }, [countyList])
 
     function clear() {
         setSelectedState({"name": "",  "GISJOIN": ""})
@@ -164,21 +164,13 @@ export default function Main({ title }: MainProps) {
                 <StyledPaper elevation={3}>
                     <Typography align='center'>County Names Begin With</Typography>
                     {LetterPieChart(pieData)}
-                    {/* <LetterLineChart/> */}
+                </StyledPaper>
+                <StyledPaper elevation={3}>
+                    <Typography align='center'>County Name Length</Typography>
+                    {LetterLineChart(lineData)}
                     {/* <LetterHistogram/> */}
                 </StyledPaper>
             </Stack>
-            {/* <Stack 
-                direction='column' 
-                // justifyContent='top'
-                alignItems="flex-end"
-            >
-                <StyledPaper elevation={3}>
-                    {LetterPieChart(pieData)}
-                    <LetterLineChart/>
-                    <LetterHistogram/>
-                </StyledPaper>
-            </Stack> */}
         </>
     );
 

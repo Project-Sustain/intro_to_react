@@ -39,6 +39,7 @@ import { UseApi } from "../hooks/UseApi";
 import DeckMap from "./DeckMap";
 import LetterPieChart from "./LetterPieChart";
 import LetterLineChart from "./LetterLineChart";
+import LetterHistogram from "./LetterHistogram";
 import stateData from "../library/state_data.json";
 import countyData from "../library/county_data.json";
 
@@ -57,6 +58,7 @@ export default function Main({ title }: MainProps) {
     const [coordinates, setCoordinates] = useState([-98.5795, 39.8283]);
     const [pieData, setPieData] = useState({data:[{ id: 0, value: 0, label: '' }]});
     const [lineData, setLineData] = useState({data:[{ name: '', value: 0 }]});
+    const [histData, setHistData] = useState({data: [{letters: 0, counties: 0 }]});
 
     useEffect(() => {
         //  Get the list of associated counties
@@ -77,7 +79,21 @@ export default function Main({ title }: MainProps) {
         setLineData({data: 
             countyList.map((county) => ({name: county, value: county.replace(/\s/g, "").length}))
         })
+        setHistData({data: Object.values(countyList
+            .map((county) => ({letters: county.replace(/\s/g, "")
+            .length, counties: 1}))
+            .reduce(groupByLetterCount, {letters: 0, counties: 0 })
+        )})
     }, [countyList])
+
+    function groupByLetterCount(accumulator, currentEntry : {letters: number; counties: number; }) {currentEntry.letters
+        if (!accumulator[currentEntry.letters]) {
+            accumulator[currentEntry.letters] = { letters: currentEntry.letters, counties: currentEntry.counties };
+        } else {
+            accumulator[currentEntry.letters].counties += currentEntry.counties;
+        }
+        return accumulator;
+    }
 
     function clear() {
         setSelectedState({"name": "",  "GISJOIN": ""})
@@ -168,7 +184,10 @@ export default function Main({ title }: MainProps) {
                 <StyledPaper elevation={3}>
                     <Typography align='center'>County Name Length</Typography>
                     {LetterLineChart(lineData)}
-                    {/* <LetterHistogram/> */}
+                </StyledPaper>
+                <StyledPaper elevation={3}>
+                    <Typography align='center'>Counties by Name Length</Typography>
+                    {LetterHistogram(histData)}
                 </StyledPaper>
             </Stack>
         </>
